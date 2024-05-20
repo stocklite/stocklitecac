@@ -1,8 +1,15 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+import datetime
 
 def index(request):
-    return render(request, "index.html")
+    context = {
+        'nombre' : 'Walter',
+        'fecha_hora' : datetime.datetime.now()
+    }
+
+
+    return render(request, "inventario/index.html", context)
 
 def create(request):
     return HttpResponse("Ingrese un producto")
