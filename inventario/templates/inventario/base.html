@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index</title>
+</head>
+<nav>
+    <ul>
+        <li><a href="{% url 'index' %}">Home</a></li>
+        <li><a href="{% url 'alta_producto' %}">Agregar producto</a></li>
+        <li>Modificar producto</li>
+        <li>Eliminar producto</li>
+        
+    </ul>
+</nav>
+<body>
+    {% block content%}
+
+    {% endblock %}
+</body>
+</html>
