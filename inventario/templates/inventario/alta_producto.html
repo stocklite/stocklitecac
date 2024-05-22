@@ -1,5 +1,10 @@
 {% extends 'inventario/base.html' %}
 
 {% block content %}
-<h1>aca va ir el formulario con todos los datos para agregar el producto</h1>
+<h1>INGRESO DE PRODUCTOS</h1>
+<form method="POST" action="">
+{% csrf_token %}
+{{alta_producto_form.as_p}}
+<input type="submit" value="Agregar producto">
+</form>
 {% endblock %}
