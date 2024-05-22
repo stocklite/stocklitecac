@@ -25,3 +25,10 @@ class AltaProductoForms(forms.Form):
         
         if self.cleaned_data["codigo"] < 10000000000:
             raise ValidationError('EL campo del codigo de producto debe contener al menos 10 numeros, si el codigo no tiene los 10 numeros completar con "0" al inicio del codigo' )
+        
+class AltaProveedoresForms(forms.Form):
+    nombre_p = forms.CharField(label="Nombre o Razon Social", required=True)
+    pedido = forms.CharField(label="Direccion", required=True)
+    telefono = forms.IntegerField(label='Telefono', required=True)
+    mail = forms.EmailField(label='E-mail', required=True)
+
