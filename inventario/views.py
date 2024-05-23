@@ -27,7 +27,7 @@ def alta_proveedores(request):
         form = AltaProveedoresForms(request.POST)
         if form.is_valid():
             print('los datos del form son:', request.POST)# este print nos muestra los datos ingresados en el formulario 
-            messages.success(request, 'El producto se agrego correctamente')
+            messages.success(request, 'El proveedor se agrego correctamente')
             return redirect('index')  # aca dirigimos a index si los datos del form son validos u otra pagina
     else:
         form = AltaProveedoresForms()
@@ -42,7 +42,7 @@ def pedidos_cliente(request):
         form = PedidoClientesForms(request.POST)
         if form.is_valid():
             print('los datos del form son:', request.POST)# este print nos muestra los datos ingresados en el formulario 
-            messages.success(request, 'El producto se agrego correctamente')
+            messages.success(request, 'El pedido se realizo correctamente')
             return redirect('index')  # aca dirigimos a index si los datos del form son validos u otra pagina
     else:
         form = PedidoClientesForms()
