@@ -2,12 +2,12 @@ from django import forms
 from django.core.exceptions import ValidationError
 
 class AltaProductoForms(forms.Form):
-    codigo = forms.IntegerField(label='Codigo de Producto', required=True)
-    nombre = forms.CharField(label='Nombre de Producto', required=True)
-    costo = forms.DecimalField(label='Precio de Costo', required=True)
-    venta = forms.DecimalField(label='Precio de venta', required=True)
-    cantidad = forms.IntegerField(label='Cantidad', required=True)
-    proveedor = forms.CharField(label='Proveedor', required=True)
+    codigo = forms.IntegerField(label='Codigo de Producto', required=True, widget=forms.NumberInput(attrs={'class': 'form-control'}))
+    nombre = forms.CharField(label='Nombre de Producto', required=True, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    costo = forms.DecimalField(label='Precio de Costo', required=True, widget=forms.NumberInput(attrs={'class': 'form-control'}))
+    venta = forms.DecimalField(label='Precio de venta', required=True, widget=forms.NumberInput(attrs={'class': 'form-control'}))
+    cantidad = forms.IntegerField(label='Cantidad', required=True, widget=forms.NumberInput(attrs={'class': 'form-control'}))
+    proveedor = forms.CharField(label='Proveedor', required=True, widget=forms.TextInput(attrs={'class': 'form-control'}))
 
    
     def clean_nombre(self):
