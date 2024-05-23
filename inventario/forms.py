@@ -32,3 +32,9 @@ class AltaProveedoresForms(forms.Form):
     telefono = forms.IntegerField(label='Telefono', required=True)
     mail = forms.EmailField(label='E-mail', required=True)
 
+class PedidoClientesForms(forms.Form):
+    numero_p = forms.IntegerField(label="Numero de pedido", required=True)
+    producto = forms.CharField(label="Nombre de producto", required=True)
+    cantidad = forms.IntegerField(label='Cantidad', required=True)
+    proveedor = forms.CharField(label='Proveedor', required=True)
+

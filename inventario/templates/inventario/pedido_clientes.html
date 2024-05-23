@@ -1,0 +1,10 @@
+{% extends 'inventario/base.html' %}
+
+{% block content %}
+<h1>PEDIDO DE CLIENTE</h1>
+<form method="POST" action="">
+{% csrf_token %}
+{{pedidos_clientes_form.as_p}}
+<input type="submit" value="Hacer pedido">
+</form>
+{% endblock %}
