@@ -23,7 +23,7 @@ class AltaProductoForms(forms.Form):
         if nombre == 'fideos' and proveedor == 'molinos':# cuando tengamos la base de datos esto cambiara por valores reales de la tabla de la DB.
             raise ValidationError('EL producto ya esta registrado')
         
-        if self.cleaned_data["codigo"] < 10000000000:
+        if self.cleaned_data["codigo"] < 1000000000:
             raise ValidationError('EL campo del codigo de producto debe contener al menos 10 numeros, si el codigo no tiene los 10 numeros completar con "0" al inicio del codigo' )
         
 class AltaPedidoForms(forms.Form):

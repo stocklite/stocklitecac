@@ -11,11 +11,11 @@
 
 {% block content %}
 
-<h1>Agregar Pedidos</h1>
+<h1>Agregar sucursal</h1>
 <form method="POST" action="">
     {% csrf_token %}
     {{alta_pedido_form.as_p}}
-<input type="submit" value="Agregar Pedido">
+<input type="submit" value="Agregar Sucursal">
 </form>
 
 {% endblock %}

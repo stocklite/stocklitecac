@@ -11,11 +11,11 @@
 
 {% block content %}
 
-<h1>Pedido Cliente</h1>
+<h1>Pedidos</h1>
 <form method="POST" action="">
     {% csrf_token %}
     {{pedidos_cliente_form.as_p}}
-<input type="submit" value="Agregar Cliente">
+<input type="submit" value="Hacer Pedido">
 </form>
 
 {% endblock %}
