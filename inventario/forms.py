@@ -2,12 +2,12 @@ from django import forms
 from django.core.exceptions import ValidationError
 
 class AltaProductoForms(forms.Form):
-    codigo = forms.IntegerField(label='Codigo de Producto', required=True, widget=forms.NumberInput(attrs={'class': 'form-control'}))
-    nombre = forms.CharField(label='Nombre de Producto', required=True, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    costo = forms.DecimalField(label='Precio de Costo', required=True, widget=forms.NumberInput(attrs={'class': 'form-control'}))
-    venta = forms.DecimalField(label='Precio de venta', required=True, widget=forms.NumberInput(attrs={'class': 'form-control'}))
-    cantidad = forms.IntegerField(label='Cantidad', required=True, widget=forms.NumberInput(attrs={'class': 'form-control'}))
-    proveedor = forms.CharField(label='Proveedor', required=True, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    codigo = forms.IntegerField(label='Codigo de Producto', required=True)
+    nombre = forms.CharField(label='Nombre de Producto', required=True)
+    costo = forms.DecimalField(label='Precio de Costo', required=True)
+    venta = forms.DecimalField(label='Precio de venta', required=True)
+    cantidad = forms.IntegerField(label='Cantidad', required=True)
+    proveedor = forms.CharField(label='Proveedor', required=True)
 
    
     def clean_nombre(self):
@@ -26,13 +26,13 @@ class AltaProductoForms(forms.Form):
         if self.cleaned_data["codigo"] < 10000000000:
             raise ValidationError('EL campo del codigo de producto debe contener al menos 10 numeros, si el codigo no tiene los 10 numeros completar con "0" al inicio del codigo' )
         
-class AltaProveedoresForms(forms.Form):
+class AltaPedidoForms(forms.Form):
     nombre_p = forms.CharField(label="Nombre o Razon Social", required=True)
     pedido = forms.CharField(label="Direccion", required=True)
     telefono = forms.IntegerField(label='Telefono', required=True)
     mail = forms.EmailField(label='E-mail', required=True)
 
-class PedidoClientesForms(forms.Form):
+class PedidosClienteForms(forms.Form):
     numero_p = forms.IntegerField(label="Numero de pedido", required=True)
     producto = forms.CharField(label="Nombre de producto", required=True)
     cantidad = forms.IntegerField(label='Cantidad', required=True)

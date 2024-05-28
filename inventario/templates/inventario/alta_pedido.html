@@ -1,0 +1,21 @@
+{% extends 'inventario/base.html' %}
+{% load static %}
+
+{% block title %} Pedidos {% endblock%}
+
+{% block extra_css %}
+
+<link rel="stylesheet" href="{% static 'inventario/styles/alta_pedido.css' %}">
+
+{% endblock %}
+
+{% block content %}
+
+<h1>Agregar Pedidos</h1>
+<form method="POST" action="">
+    {% csrf_token %}
+    {{alta_pedido_form.as_p}}
+<input type="submit" value="Agregar Pedido">
+</form>
+
+{% endblock %}

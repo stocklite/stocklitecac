@@ -1,6 +1,25 @@
 {% extends 'inventario/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+
+<link rel="stylesheet" href="{% static 'inventario/styles/index.css' %}">
+
+{% endblock %}
 
 {% block content %}
 
-<h1>Sorry, this section is under construction...</h1>
+
+
+<div class="image-container">
+    <h1>Bienvenidos</h1>
+<!-- 
+    <div class="image-content">
+        <img src="{% static 'inventario/img/bg-stocklite.png' %}" alt="Foto de almacen">
+    </div> -->
+    
+</div>
+
+
+
 {% endblock%}

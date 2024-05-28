@@ -1,0 +1,22 @@
+{% extends 'inventario/base.html' %}
+{% load static %}
+
+{% block title %} Clientes {% endblock%}
+
+{% block extra_css %}
+
+<link rel="stylesheet" href="{% static 'inventario/styles/pedidos_cliente.css' %}">
+
+{% endblock %}
+
+{% block content %}
+
+<h1>Pedido Cliente</h1>
+<form method="POST" action="">
+    {% csrf_token %}
+    {{pedidos_cliente_form.as_p}}
+<input type="submit" value="Agregar Cliente">
+</form>
+
+{% endblock %}
+
