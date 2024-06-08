@@ -4,19 +4,57 @@
 {% block title %} Clientes {% endblock%}
 
 {% block extra_css %}
-
 <link rel="stylesheet" href="{% static 'inventario/styles/pedidos_cliente.css' %}">
-
 {% endblock %}
 
 {% block content %}
+<h1>Registrar Pedido</h1>
 
-<h1>Pedidos</h1>
+<!-- Mostrar mensajes -->
+{% if messages %}
+    <div>
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
 <form method="POST" action="">
     {% csrf_token %}
-    {{pedidos_cliente_form.as_p}}
-<input type="submit" value="Hacer Pedido">
+    {{ pedido_form.as_p }}
+
+    <div id="sucursal-field" style="display: none;">
+        {{ pedido_form.sucursal.label_tag }}
+        {{ pedido_form.sucursal }}
+    </div>
+
+    {{ formset.management_form }}
+    {% for form in formset %}
+        <div class="formset-form">
+            {{ form.as_p }}
+        </div>
+    {% endfor %}
+
+    <input type="submit" value="Registrar Pedido" class="btn btn-primary">
 </form>
 
-{% endblock %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var tipoOperacionField = document.querySelector('select[name="tipo_de_operacion"]');
+        var sucursalField = document.getElementById('sucursal-field');
 
+        function toggleSucursalField() {
+            if (tipoOperacionField.value === 'egresos') {
+                sucursalField.style.display = 'block';
+            } else {
+                sucursalField.style.display = 'none';
+            }
+        }
+
+        tipoOperacionField.addEventListener('change', toggleSucursalField);
+        toggleSucursalField();  // Initial call to set the correct visibility
+    });
+</script>
+{% endblock %}

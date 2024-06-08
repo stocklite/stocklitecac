@@ -20,5 +20,5 @@ from inventario import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('inventario/', include('inventario.urls'))
+    path('', include('inventario.urls'))
 ]

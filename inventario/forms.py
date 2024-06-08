@@ -1,40 +1,52 @@
 from django import forms
 from django.core.exceptions import ValidationError
+from .models import Producto, Sucursales, Pedidos, ItemPedido
+from django.forms import inlineformset_factory
 
-class AltaProductoForms(forms.Form):
-    codigo = forms.IntegerField(label='Codigo de Producto', required=True)
-    nombre = forms.CharField(label='Nombre de Producto', required=True)
-    costo = forms.DecimalField(label='Precio de Costo', required=True)
-    venta = forms.DecimalField(label='Precio de venta', required=True)
-    cantidad = forms.IntegerField(label='Cantidad', required=True)
-    proveedor = forms.CharField(label='Proveedor', required=True)
+class AltaProductoForm(forms.ModelForm):
+    class Meta:
+        model = Producto
+        fields = ['codigo', 'nombre', 'costo', 'venta', 'cantidad', 'proveedor']
 
-   
-    def clean_nombre(self):
-        if not self.cleaned_data["nombre"].isalpha():#el tema es ke aca con el atributo isalpha no se puede poner espacios.. a revisar! ke otra opcion podemos ponerle
+    def clean_nombre(self):# estos es para validacion de campo individual del nombre
+        nombre = self.cleaned_data['nombre']
+        if not all(char.isalpha() or char.isspace() for char in nombre):
             raise ValidationError('El nombre del Producto solo debe contener letras')
-        return self.cleaned_data['nombre']
-    
+        return nombre
+    def clean_codigo(self):# estos es para validacion de campo individual del codigo
+        codigo = self.cleaned_data.get('codigo')
+        if codigo and Producto.objects.filter(codigo=codigo).exists():
+            raise ValidationError('EL codigo ya se encuentra registrado')
+        return codigo
 
-    def clean(self):
+
+    def clean(self):# esto es para una validacion general del formulario Alta Producto
         cleaned_data = super().clean()
         nombre = cleaned_data.get('nombre')
         proveedor = cleaned_data.get('proveedor')
-        if nombre == 'fideos' and proveedor == 'molinos':# cuando tengamos la base de datos esto cambiara por valores reales de la tabla de la DB.
-            raise ValidationError('EL producto ya esta registrado')
-        
-        if self.cleaned_data["codigo"] < 1000000000:
-            raise ValidationError('EL campo del codigo de producto debe contener al menos 10 numeros, si el codigo no tiene los 10 numeros completar con "0" al inicio del codigo' )
-        
-class AltaPedidoForms(forms.Form):
-    nombre_p = forms.CharField(label="Nombre o Razon Social", required=True)
-    pedido = forms.CharField(label="Direccion", required=True)
-    telefono = forms.IntegerField(label='Telefono', required=True)
-    mail = forms.EmailField(label='E-mail', required=True)
+        codigo = cleaned_data.get('codigo')
 
-class PedidosClienteForms(forms.Form):
-    numero_p = forms.IntegerField(label="Numero de pedido", required=True)
-    producto = forms.CharField(label="Nombre de producto", required=True)
-    cantidad = forms.IntegerField(label='Cantidad', required=True)
-    proveedor = forms.CharField(label='Proveedor', required=True)
+        if Producto.objects.filter(nombre=nombre, proveedor=proveedor).exists():
+            raise ValidationError('El producto con este nombre y proveedor ya se encuentran registrados')
+        if Producto.objects.filter(codigo=codigo).exists():
+            raise ValidationError('EL codigo ya se encuentra registrado')
+        if cleaned_data.get('codigo') and cleaned_data['codigo'] < 1000000000:
+            raise ValidationError('EL campo del codigo de producto debe contener al menos 10 numeros, si el codigo no tiene los 10 numeros completar con "0" al inicio del codigo')
+        return cleaned_data
+        
 
+class SucursalesForm(forms.ModelForm):
+    class Meta:
+        model = Sucursales
+        fields = ['nombre_sucursal', 'direccion', 'telefono', 'email', 'encargado']
+   
+
+
+
+class PedidosForm(forms.ModelForm):
+    class Meta:
+        model = Pedidos
+        fields = ['sucursal', 'tipo_de_operacion']
+
+
+ItemPedidoFormset = inlineformset_factory(Pedidos, ItemPedido, fields=('producto', 'cantidad', 'precio', 'total'), extra=1)
