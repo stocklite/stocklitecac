@@ -1,0 +1,22 @@
+{% extends 'inventario/base.html' %}
+{% load static %}
+
+{% block title %}Editar Sucursal{% endblock %}
+
+{% block extra_css %}
+
+<link rel="stylesheet" href="{% static 'inventario/styles/alta_producto.css' %}">
+
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Editar Sucursal</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+        <a href="{% url 'listado_sucursales' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

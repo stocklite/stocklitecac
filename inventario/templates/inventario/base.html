@@ -24,13 +24,6 @@
         {% endfor %}
     </ul>
     {% endif %}
-   <!--  <ul>
-        <li><a href="{% url 'index' %}">Home</a></li>
-        <li><a href="{% url 'alta_producto' %}">Agregar producto</a></li>
-        <li><a href="#">Modificar producto</a></li>
-        <li><a href="#">Eliminar producto</a></li>
-
-    </ul> -->
 </nav>
 
 <body>
@@ -48,10 +41,10 @@
         <h2>Logo</h2>
         <ul>
             <li><a href="{% url 'index' %}">Home</a></li>
-            <li><a href="{% url 'alta_producto' %}">Productos</a></li>
-            <li><a href="{% url 'alta_sucursales' %}">Sucursales</a></li> 
             <li><a href="{% url 'registro_pedido' %}">Pedidos</a></li>
             <li><a href="{% url 'listado_productos' %}">Lista de productos</a></li>
+            <li><a href="{% url 'listado_sucursales' %}">Lista de Sucursales</a></li>
+            <li><a href="{% url 'buscar_transferencias' %}">Productos por sucursales</a></li>
         </ul>
     </div>
 

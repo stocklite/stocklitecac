@@ -1,0 +1,40 @@
+{% extends 'inventario/base.html' %}
+{% load static %}
+
+{% block title %}Productos por sucursal{% endblock %}
+
+{% block extra_css %}
+
+<link rel="stylesheet" href="{% static 'inventario/styles/alta_producto.css' %}">
+
+{% endblock %}
+
+{% block content %}
+<h1>Buscar productos por sucursal</h1>
+
+<form method="GET" action="">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Buscar" class="btn btn-primary">
+</form>
+
+{% if transferencias %}
+    <h2>Resultados</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in transferencias %}
+                <tr>
+                    <td>{{ item.producto.nombre }}</td>
+                    <td>{{ item.cantidad }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endif %}
+{% endblock %}

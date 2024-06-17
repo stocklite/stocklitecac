@@ -46,7 +46,11 @@ class SucursalesForm(forms.ModelForm):
 class PedidosForm(forms.ModelForm):
     class Meta:
         model = Pedidos
-        fields = ['sucursal', 'tipo_de_operacion']
+        fields = ['tipo_de_operacion']
 
 
-ItemPedidoFormset = inlineformset_factory(Pedidos, ItemPedido, fields=('producto', 'cantidad', 'precio', 'total'), extra=1)
+ItemPedidoFormset = inlineformset_factory(Pedidos, ItemPedido, fields=('producto', 'cantidad', 'precio', 'total'), extra=1, can_delete=False)
+
+
+class BuscarTransferenciasForm(forms.Form):
+    sucursal = forms.ModelChoiceField(queryset=Sucursales.objects.all(), required=True, label="Sucursal")

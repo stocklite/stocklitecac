@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
-from .forms import AltaProductoForm, SucursalesForm, PedidosForm, ItemPedidoFormset
+from .forms import AltaProductoForm, SucursalesForm, PedidosForm, ItemPedidoFormset, BuscarTransferenciasForm
 from django.contrib import messages
-from django.views.generic import ListView
-from .models import Producto
+from django.views.generic import ListView, UpdateView, DeleteView
+from .models import Producto, Sucursales, ItemPedido, Pedidos
+from django.urls import reverse_lazy
 
 def index(request):
     return render(request, 'inventario/index.html')
@@ -29,7 +30,7 @@ def alta_sucursales(request):
         suc_form = SucursalesForm(request.POST)
         if suc_form.is_valid():
             suc_form.save()
-            messages.success(request, 'El pedido se agrego correctamente')
+            messages.success(request, 'La sucursal se agrego correctamente')
             return redirect('index')  # aca dirigimos a index si los datos del form son validos u otra pagina
     else:
         form = SucursalesForm()
@@ -44,32 +45,46 @@ def registro_pedido(request):
     if request.method == 'POST':
         pedido_form = PedidosForm(request.POST)
         formset = ItemPedidoFormset(request.POST, request.FILES)
+        sucursal_id = request.POST.get('sucursal')
 
         if pedido_form.is_valid() and formset.is_valid():
-            pedido = pedido_form.save()
+            pedido = pedido_form.save(commit=False)
+            tipo_de_operacion = pedido.tipo_de_operacion
+
+            if tipo_de_operacion == 'egresos' and not sucursal_id:
+                messages.error(request, 'Debe seleccionar una sucursal para la operación de egresos.')
+                return redirect('registro_pedido')
+
+            if tipo_de_operacion == 'egresos':
+                pedido.sucursal = Sucursales.objects.get(id=sucursal_id)
+
+            pedido.save()
             formset.instance = pedido
             formset.save()
 
-            tipo_de_operacion = pedido.tipo_de_operacion
             for item in formset.cleaned_data:
                 producto = item['producto']
                 cantidad = item['cantidad']
-                if tipo_de_operacion == 'ingreso':
+                if tipo_de_operacion == 'ingresos':
                     producto.cantidad += cantidad
-                elif tipo_de_operacion == 'egreso':
-                    producto.cantidad -= cantidad
+                elif tipo_de_operacion == 'egresos':
+                    if producto.cantidad >= cantidad:
+                        producto.cantidad -= cantidad
+                    else:
+                        messages.error(request, f"No hay suficiente stock de {producto.nombre}")
+                        return redirect('registro_pedido')
                 producto.save()
 
-        messages.success(request, 'El pedido se registro correctamente')
-        return redirect('index')
-        
-    else: 
+            messages.success(request, 'El pedido se registró correctamente')
+            return redirect('index')
+    else:
         pedido_form = PedidosForm()
         formset = ItemPedidoFormset()
 
     contexto = {
         'pedido_form': pedido_form,
         'formset': formset,
+        'sucursales': Sucursales.objects.all()
     }
     return render(request, 'inventario/pedidos_cliente.html', contexto)
 
@@ -83,3 +98,46 @@ class ProductoListView(ListView):
 def listado_productos(request):
     productos = Producto.objects.all()
     return render(request, 'inventario/listado_productos.html', {'productos': productos})
+
+class ProductoDeleteView(DeleteView):
+    model = Producto
+    template_name = 'inventario/borrar_producto.html'
+    success_url = reverse_lazy('listado_productos')
+
+class ProductoUpdateView(UpdateView):
+    model = Producto
+    template_name = 'inventario/editar_producto.html'
+    fields = ['codigo', 'nombre', 'costo', 'venta', 'cantidad', 'proveedor']
+    success_url = reverse_lazy('listado_productos')
+
+class SucursalListView(ListView):
+    model = Sucursales
+    context_object_name = 'sucursales'
+    template_name = 'inventario/listado_sucursales.html'
+    ordering = ['nombre_sucursal']
+
+class SucursalDeleteView(DeleteView):
+    model = Sucursales
+    template_name = 'inventario/borrar_sucursal.html'
+    success_url = reverse_lazy('listado_sucursales')
+
+class SucursalUpdateView(UpdateView):
+    model = Sucursales
+    template_name = 'inventario/editar_sucursal.html'
+    fields = ['nombre_sucursal', 'direccion', 'telefono', 'email', 'encargado']
+    success_url = reverse_lazy('listado_sucursales')
+
+
+def buscar_transferencias(request):
+    form = BuscarTransferenciasForm(request.GET or None)
+    transferencias = None
+
+    if form.is_valid():
+        sucursal = form.cleaned_data['sucursal']
+        transferencias = ItemPedido.objects.filter(pedido__sucursal=sucursal, pedido__tipo_de_operacion='egresos')
+
+    contexto = {
+        'form': form,
+        'transferencias': transferencias,
+    }
+    return render(request, 'inventario/buscar_transferencias.html', contexto)

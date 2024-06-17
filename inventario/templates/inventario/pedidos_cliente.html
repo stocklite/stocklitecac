@@ -1,7 +1,7 @@
 {% extends 'inventario/base.html' %}
 {% load static %}
 
-{% block title %} Clientes {% endblock%}
+{% block title %}Clientes{% endblock%}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'inventario/styles/pedidos_cliente.css' %}">
@@ -10,7 +10,7 @@
 {% block content %}
 <h1>Registrar Pedido</h1>
 
-<!-- Mostrar mensajes -->
+
 {% if messages %}
     <div>
         {% for message in messages %}
@@ -26,8 +26,13 @@
     {{ pedido_form.as_p }}
 
     <div id="sucursal-field" style="display: none;">
-        {{ pedido_form.sucursal.label_tag }}
-        {{ pedido_form.sucursal }}
+        <label for="id_sucursal">Sucursal:</label>
+        <select name="sucursal" id="id_sucursal">
+            <option value="">Seleccione una sucursal</option>
+            {% for sucursal in sucursales %}
+                <option value="{{ sucursal.id }}">{{ sucursal.nombre_sucursal }}</option>
+            {% endfor %}
+        </select>
     </div>
 
     {{ formset.management_form }}
@@ -54,7 +59,7 @@
         }
 
         tipoOperacionField.addEventListener('change', toggleSucursalField);
-        toggleSucursalField();  // Initial call to set the correct visibility
+        toggleSucursalField();
     });
 </script>
 {% endblock %}
