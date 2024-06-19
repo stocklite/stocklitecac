@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.views.generic import ListView, UpdateView, DeleteView
 from .models import Producto, Sucursales, ItemPedido, Pedidos
 from django.urls import reverse_lazy
+from django.db.models import Sum
 
 def index(request):
     return render(request, 'inventario/index.html')
@@ -140,8 +141,13 @@ def buscar_transferencias(request):
 
     if form.is_valid():
         sucursal = form.cleaned_data['sucursal']
-        transferencias = ItemPedido.objects.filter(pedido__sucursal=sucursal, pedido__tipo_de_operacion='egresos')
-
+        transferencias = (
+            ItemPedido.objects
+            .filter(pedido__sucursal=sucursal, pedido__tipo_de_operacion='egresos')
+            .values('producto__nombre')
+            .annotate(total_cantidad=Sum('cantidad'))
+            .order_by('producto__nombre')
+        )
     contexto = {
         'form': form,
         'transferencias': transferencias,

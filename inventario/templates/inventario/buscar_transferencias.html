@@ -30,8 +30,8 @@
         <tbody>
             {% for item in transferencias %}
                 <tr>
-                    <td>{{ item.producto.nombre }}</td>
-                    <td>{{ item.cantidad }}</td>
+                    <td>{{ item.producto__nombre }}</td>
+                    <td>{{ item.total_cantidad }}</td>
                 </tr>
             {% endfor %}
         </tbody>
