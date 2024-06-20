@@ -49,19 +49,9 @@ def registro_pedido(request):
         sucursal_id = request.POST.get('sucursal')
 
         if pedido_form.is_valid() and formset.is_valid():
-            tipo_de_operacion = pedido_form.cleaned_data['tipo_de_operacion']
-            
-            # Validar existencia de stock para egresos antes de guardar el pedido
-            if tipo_de_operacion == 'egresos':
-                for item in formset.cleaned_data:
-                    producto = item['producto']
-                    cantidad = item['cantidad']
-                    if producto.cantidad < cantidad:
-                        messages.error(request, f"No hay suficiente stock de {producto.nombre}")
-                        return redirect('registro_pedido')
-            
-            # Guardar el pedido y actualizar la cantidad de productos
             pedido = pedido_form.save(commit=False)
+            tipo_de_operacion = pedido.tipo_de_operacion
+
             if tipo_de_operacion == 'egresos' and not sucursal_id:
                 messages.error(request, 'Debe seleccionar una sucursal para la operación de egresos.')
                 return redirect('registro_pedido')
@@ -79,7 +69,11 @@ def registro_pedido(request):
                 if tipo_de_operacion == 'ingresos':
                     producto.cantidad += cantidad
                 elif tipo_de_operacion == 'egresos':
-                    producto.cantidad -= cantidad
+                    if producto.cantidad >= cantidad:
+                        producto.cantidad -= cantidad
+                    else:
+                        messages.error(request, f"No hay suficiente stock de {producto.nombre}")
+                        return redirect('registro_pedido')
                 producto.save()
 
             messages.success(request, 'El pedido se registró correctamente')
@@ -148,6 +142,7 @@ def buscar_transferencias(request):
             .annotate(total_cantidad=Sum('cantidad'))
             .order_by('producto__nombre')
         )
+
     contexto = {
         'form': form,
         'transferencias': transferencias,

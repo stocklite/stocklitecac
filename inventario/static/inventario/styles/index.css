@@ -1,13 +1,43 @@
 /* index.css */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: sans-serif;
 }
 
 body {
-    display: flex;
-    min-height: 100vh;
-    flex-direction: column;
+  display: flex;
+  min-height: 100vh;
+  width: 100vw;
+  flex-direction: column;
+}
+
+.intro {
+  padding: 2rem 20rem 2rem 2rem;
+  background-color: rgba(0, 0, 0, 0.5);
+  text-align: justify;
+  border-radius: 10px;
+}
+
+.intro > h1,
+.intro > p,
+.intro > ul {
+  color: white;
+  margin-bottom: 2rem;
+}
+
+.intro > p,
+.intro > ul {
+  font-size: 20px;
+}
+
+.image-content > img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  z-index: -1;
 }

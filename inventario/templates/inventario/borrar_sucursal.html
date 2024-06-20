@@ -1,10 +1,18 @@
 <!-- templates/inventario/borrar_sucursal.html -->
 {% extends 'inventario/base.html' %}
+{% load static %}
 
-{% block title %}Confirmar Eliminación{% endblock %}
+{% block title %}Borrar Sucursal{% endblock %}
+
+{% block extra_css %}
+<link
+  rel="stylesheet"
+  href="{% static 'inventario/styles/delete.css' %}"
+/>
+{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
+<div class="container mt-5 alert">
     <h1>Confirmar Eliminación</h1>
     <p>¿Estás seguro de que quieres eliminar "{{ object.nombre_sucursal }}"?</p>
     <form method="post">

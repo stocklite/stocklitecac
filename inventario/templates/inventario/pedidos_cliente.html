@@ -1,65 +1,62 @@
+<!-- prettier-ignore -->
+
 {% extends 'inventario/base.html' %}
 {% load static %}
 
-{% block title %}Clientes{% endblock%}
+{% block title %}Pedidos{% endblock%}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'inventario/styles/pedidos_cliente.css' %}">
-{% endblock %}
-
-{% block content %}
-<h1>Registrar Pedido</h1>
-
-
-{% if messages %}
-    <div>
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">
-                {{ message }}
-            </div>
-        {% endfor %}
-    </div>
+<link
+  rel="stylesheet"
+  href="{% static 'inventario/styles/pedidos_cliente.css' %}"
+/>
+{% endblock %} {% block content %} {% if messages %}
+<div>
+  {% for message in messages %}
+  <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+  {% endfor %}
+</div>
 {% endif %}
 
 <form method="POST" action="">
-    {% csrf_token %}
-    {{ pedido_form.as_p }}
+  <h1>Registrar Pedido</h1>
+  {% csrf_token %} {{ pedido_form.as_p }}
 
-    <div id="sucursal-field" style="display: none;">
-        <label for="id_sucursal">Sucursal:</label>
-        <select name="sucursal" id="id_sucursal">
-            <option value="">Seleccione una sucursal</option>
-            {% for sucursal in sucursales %}
-                <option value="{{ sucursal.id }}">{{ sucursal.nombre_sucursal }}</option>
-            {% endfor %}
-        </select>
-    </div>
+  <div id="sucursal-field" style="display: none">
+    <label for="id_sucursal">Sucursal:</label>
+    <select name="sucursal" id="id_sucursal">
+      <option value="">Seleccione una sucursal</option>
+      {% for sucursal in sucursales %}
+      <option value="{{ sucursal.id }}">{{ sucursal.nombre_sucursal }}</option>
+      {% endfor %}
+    </select>
+  </div>
 
-    {{ formset.management_form }}
-    {% for form in formset %}
-        <div class="formset-form">
-            {{ form.as_p }}
-        </div>
-    {% endfor %}
-
-    <input type="submit" value="Registrar Pedido" class="btn btn-primary">
+  {{ formset.management_form }} {% for form in formset %}
+  <div class="formset-form">{{ form.as_p }}</div>
+  {% endfor %}
+  <div class="center">
+    <input type="submit" value="Registrar Pedido" class="btn btn-primary" />
+  </div>
 </form>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var tipoOperacionField = document.querySelector('select[name="tipo_de_operacion"]');
-        var sucursalField = document.getElementById('sucursal-field');
+  document.addEventListener("DOMContentLoaded", function () {
+    var tipoOperacionField = document.querySelector(
+      'select[name="tipo_de_operacion"]'
+    );
+    var sucursalField = document.getElementById("sucursal-field");
 
-        function toggleSucursalField() {
-            if (tipoOperacionField.value === 'egresos') {
-                sucursalField.style.display = 'block';
-            } else {
-                sucursalField.style.display = 'none';
-            }
-        }
+    function toggleSucursalField() {
+      if (tipoOperacionField.value === "egresos") {
+        sucursalField.style.display = "block";
+      } else {
+        sucursalField.style.display = "none";
+      }
+    }
 
-        tipoOperacionField.addEventListener('change', toggleSucursalField);
-        toggleSucursalField();
-    });
+    tipoOperacionField.addEventListener("change", toggleSucursalField);
+    toggleSucursalField();
+  });
 </script>
 {% endblock %}
