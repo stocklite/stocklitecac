@@ -1,70 +1,50 @@
-<!-- prettier-ignore -->
 {% extends 'inventario/base.html' %}
 {% load static %}
 
 {% block title %}Sucursales{% endblock %}
 
 {% block extra_css %}
-<link
-  rel="stylesheet"
-  href="{% static 'inventario/styles/alta_sucursal.css' %}"
-/>
-<<link
-  rel="stylesheet"
-  href="{% static 'inventario/styles/alta_producto.css' %}"
-/>
-{% endblock %} {% block content %}
+<link rel="stylesheet" href="{% static 'inventario/styles/alta_sucursal.css' %}">
+{% endblock %}
+
+{% block content %}
 
 <div class="container mt-5">
-  <h1 class="mb-4">Lista de sucursales</h1>
-  <div class="table-responsive">
-    <a href="{% url 'alta_sucursales' %}" class="addbox-link">      
-      <div class="add-info"><p>Agregar</p></div>
-      <span class="material-symbols-outlined addbox">add_box</span></a
-    >
-    <table class="table table-striped table-hover">
-      <thead>
-        <tr>
-          <th>Nombre Sucursal</th>
-          <th>Dirección</th>
-          <th>Teléfono</th>
-          <th>Email</th>
-          <th>Encargado</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for sucursal in sucursales %}
-        <tr>
-          <td>{{ sucursal.nombre_sucursal }}</td>
-          <td>{{ sucursal.direccion }}</td>
-          <td>{{ sucursal.telefono }}</td>
-          <td>{{ sucursal.email }}</td>
-          <td>{{ sucursal.encargado }}</td>
-          <td class="action-cell">
-            <div class="action-buttons">
-              <a href="{% url 'sucursal-edit' sucursal.pk %}" class="edit-link"
-                >
-                <div class="edit-info"><p>Editar</p></div>
-                <span class="material-symbols-outlined edit">edit</span></a
-              >
-              <a
-                href="{% url 'sucursal-delete' sucursal.pk %}"
-                class="delete-link"
-                >
-                <div class="delete-info"><p>Borrar</p></div>
-                <span class="material-symbols-outlined delete">delete</span></a
-              >
-            </div>
-          </td>
-        </tr>
-        {% empty %}
-        <tr>
-          <td colspan="6" class="text-center">No hay sucursales ingresadas</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+    <h1 class="mb-4">Lista de sucursales</h1>
+    <div class="table-responsive">
+        <a href="{% url 'alta_sucursales' %}" class="btn btn-warning btn-sm">Nuevo</a>
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Nombre Sucursal</th>
+                    <th>Dirección</th>
+                    <th>Teléfono</th>
+                    <th>Email</th>
+                    <th>Encargado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sucursal in sucursales %}
+                    <tr>
+                        <td>{{ sucursal.nombre_sucursal }}</td>
+                        <td>{{ sucursal.direccion }}</td>
+                        <td>{{ sucursal.telefono }}</td>
+                        <td>{{ sucursal.email }}</td>
+                        <td>{{ sucursal.encargado }}</td>
+                        <td>
+                            <a href="{% url 'sucursal-edit' sucursal.pk %}" class="btn btn-warning btn-sm">Editar</a>
+                            <a href="{% url 'sucursal-delete' sucursal.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center">No hay sucursales ingresadas</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 
 {% endblock %}

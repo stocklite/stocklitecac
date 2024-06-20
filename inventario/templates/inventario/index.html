@@ -1,37 +1,25 @@
-{% extends 'inventario/base.html' %} 
-{% load static %} 
-{% block title %} Home {% endblock %}
+{% extends 'inventario/base.html' %}
+{% load static %}
+
 {% block extra_css %}
 
-<link rel="stylesheet" href="{% static 'inventario/styles/index.css' %}" />
+<link rel="stylesheet" href="{% static 'inventario/styles/index.css' %}">
 
-{% endblock %} 
+{% endblock %}
+
 {% block content %}
 
-<div class="intro">
-  <h1>Bienvenido a StockLite</h1>
-  <p>
-    StockLite es tu herramienta esencial para una gestión eficiente del
-    inventario.
-  </p>
-  <p>Con nuestra plataforma, puedes:</p>
-  <ul>
-    <li>Monitorizar tu stock en tiempo real.</li>
-    <li>Optimizar el reabastecimiento de productos.</li>
-    <li>Evitar excesos y faltantes de inventario.</li>
-    <li>Generar informes detallados y fáciles de entender.</li>
-  </ul>
-  <p>
-    Simplifica la administración de tu inventario, mejora la eficiencia
-    operativa y toma decisiones informadas con StockLite. ¡Empieza hoy y lleva
-    el control de tu stock al siguiente nivel!
-  </p>
+
+
+<div class="image-container">
+    <h1>Bienvenidos</h1>
+
+    <div class="image-content">
+        <img src="{% static 'inventario/img/bg-stocklite.png' %}" alt="Foto de almacen">
+    </div>
+    
 </div>
-<div class="image-content">
-  <img
-    src="{% static 'inventario/img/bg-stocklite.png' %}"
-    alt="Foto de almacen"
-  />
-</div>
+
+
 
 {% endblock%}
