@@ -27,6 +27,7 @@ def alta_producto(request):
     return render(request, "inventario/alta_producto.html", contexto)# redirige a la misma pagina si hay algun error
 
 def alta_sucursales(request):
+    
     if request.method == 'POST':
         suc_form = SucursalesForm(request.POST)
         if suc_form.is_valid():
