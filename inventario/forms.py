@@ -54,3 +54,7 @@ ItemPedidoFormset = inlineformset_factory(Pedidos, ItemPedido, fields=('producto
 
 class BuscarTransferenciasForm(forms.Form):
     sucursal = forms.ModelChoiceField(queryset=Sucursales.objects.all(), required=True, label="Sucursal")
+
+
+class BusquedaForm(forms.Form):
+    termino_busqueda = forms.CharField(label='Buscar')

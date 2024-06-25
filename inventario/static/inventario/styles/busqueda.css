@@ -1,0 +1,29 @@
+.containerb{
+    margin-top:200px;
+}
+
+.btn:hover{
+    color:#fff;
+}
+
+.input-text:focus{
+       
+  
+    box-shadow: 0px 0px 0px;
+    border-color:#f8c146;
+    outline: 0px;
+}
+
+.form-control {
+    border: 1px solid #f8c146;
+    .input-group {
+        width: 100%; /* Ajusta el ancho del grupo de entrada al 100% */
+        margin: auto; /* Centra horizontalmente el grupo de entrada */
+        max-width: 600px; /* Define un ancho máximo para el grupo de entrada */
+    }
+    
+    .input-group input[type="text"] {
+        height: 50px; /* Ajusta la altura del campo de búsqueda */
+        font-size: 16px; /* Ajusta el tamaño de fuente del campo de búsqueda */
+    }
+}

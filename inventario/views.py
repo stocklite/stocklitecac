@@ -5,10 +5,25 @@ from django.views.generic import ListView, UpdateView, DeleteView
 from .models import Producto, Sucursales, ItemPedido, Pedidos
 from django.urls import reverse_lazy
 from django.db.models import Sum
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.forms import AuthenticationForm
+from .forms import BusquedaForm
 
+
+
+@login_required
 def index(request):
-    return render(request, 'inventario/index.html')
+    username = request.user.username
+    mensaje_de_bienvenida = f"Bienvenido, {username}"
+    contexto = {
+        'mensaje_bienvenida': mensaje_de_bienvenida
+    }
+    return render(request, 'inventario/index.html', contexto)
 
+
+@login_required(login_url='login')
 def alta_producto(request):
     if request.method == 'POST':
         form = AltaProductoForm(request.POST)
@@ -26,6 +41,8 @@ def alta_producto(request):
     
     return render(request, "inventario/alta_producto.html", contexto)# redirige a la misma pagina si hay algun error
 
+
+@login_required(login_url='login')
 def alta_sucursales(request):
     
     if request.method == 'POST':
@@ -43,6 +60,8 @@ def alta_sucursales(request):
 
     return render(request, 'inventario/alta_sucursales.html', contexto)
 
+
+@login_required(login_url='login')
 def registro_pedido(request):
     if request.method == 'POST':
         pedido_form = PedidosForm(request.POST)
@@ -96,12 +115,25 @@ def registro_pedido(request):
     }
     return render(request, 'inventario/pedidos_cliente.html', contexto)
 
-
-class ProductoListView(ListView):
+class ProductoListView(LoginRequiredMixin, ListView):
     model = Producto
     context_object_name = 'productos'
     template_name = 'inventario/listado_productos.html'
-    ordering = ['codigo']
+    login_url = 'login' 
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        form = BusquedaForm(self.request.GET)
+        if form.is_valid():
+            termino_busqueda = form.cleaned_data['termino_busqueda']
+            queryset = queryset.filter(nombre__icontains=termino_busqueda)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = BusquedaForm(self.request.GET)
+        return context
+    
 
 def listado_productos(request):
     productos = Producto.objects.all()
@@ -118,11 +150,12 @@ class ProductoUpdateView(UpdateView):
     fields = ['codigo', 'nombre', 'costo', 'venta', 'cantidad', 'proveedor']
     success_url = reverse_lazy('listado_productos')
 
-class SucursalListView(ListView):
+class SucursalListView(LoginRequiredMixin, ListView):
     model = Sucursales
     context_object_name = 'sucursales'
     template_name = 'inventario/listado_sucursales.html'
-    ordering = ['nombre_sucursal']
+    login_url = 'login' 
+
 
 class SucursalDeleteView(DeleteView):
     model = Sucursales
@@ -136,6 +169,7 @@ class SucursalUpdateView(UpdateView):
     success_url = reverse_lazy('listado_sucursales')
 
 
+@login_required(login_url='login')
 def buscar_transferencias(request):
     form = BuscarTransferenciasForm(request.GET or None)
     transferencias = None
@@ -149,6 +183,7 @@ def buscar_transferencias(request):
             .annotate(total_cantidad=Sum('cantidad'))
             .order_by('producto__nombre')
         )
+        return redirect('login')
     contexto = {
         'form': form,
         'transferencias': transferencias,

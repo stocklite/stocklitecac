@@ -18,27 +18,28 @@
     {% block extra_css %}{% endblock %}
 
 </head>
-
-<nav>
-    {% if messages %}
-    <ul class="messages">
-        {% for message in messages %}
-        <li {% if messages.tags %} class="{{ message.tags }}" {% endif %}>
-            {{ message }}
-        </li>
-        {% endfor %}
-    </ul>
-    {% endif %}
-</nav>
-
 <body>
-
+    
     <header>
         <nav>
             <div class="header-content">
                 <h1>StockLite</h1>
             </div>
-                
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li {% if messages.tags %} class="{{ message.tags }}" {% endif %}>
+                    {{ message }}
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            
+            {% if mensaje_bienvenida %}
+            <div>
+                    <h5>{{ mensaje_bienvenida }}</h5> 
+                </div>
+        {% endif %}
         </nav>
     </header>
 
@@ -50,6 +51,13 @@
             <li><a href="{% url 'listado_productos' %}">Lista de productos</a></li>
             <li><a href="{% url 'listado_sucursales' %}">Lista de Sucursales</a></li>
             <li><a href="{% url 'buscar_transferencias' %}">Productos en sucursales</a></li>
+            {% if user.is_authenticated %}
+                <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+            <button type="submit" class="nav-link btn btn-link">Cerrar sesión</button>
+</form>
+{% endif %}
+
         </ul>
     </div>
 

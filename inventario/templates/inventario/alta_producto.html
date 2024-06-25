@@ -15,7 +15,7 @@
 <form method="POST" action="">
     {% csrf_token %}
     {{alta_producto_form.as_p}}
-    <input type="submit" value="Agregar producto" class="btn btn-primary">
+    <button type="submit" class="btn btn-primary">Agregar Producto</button>
     <a href="{% url 'listado_productos' %}" class="btn btn-secondary">Cancelar</a>
 
 </form>

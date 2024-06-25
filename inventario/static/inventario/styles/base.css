@@ -117,3 +117,8 @@
   .footer-bottom {
     font-size: 16px;
   }
+
+.alert .alert-success .sm {
+  padding: 5px;
+  
+  }
