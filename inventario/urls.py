@@ -18,7 +18,6 @@ urlpatterns = [
     path('hacer_pedido/', views.registro_pedido, name='pedidos_cliente'),
     path('pedidos/<int:pk>/edit/', PedidoUpdateView.as_view(), name='pedido-edit'),
     path('pedidos/<int:pk>/delete/', PedidoDeleteView.as_view(), name='pedido-delete'),
-    #path('pedidos/nuevo/', PedidoCreateView.as_view(), name='crear_pedido'),
     path('buscar_transferencias/', views.buscar_transferencias, name='buscar_transferencias'),
     path('listado_pedidos/', PedidoListView.as_view(), name='listado_pedidos'),
     
