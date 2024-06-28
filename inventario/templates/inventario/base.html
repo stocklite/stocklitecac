@@ -47,9 +47,10 @@
         <h2>Logo</h2>
         <ul>
             <li><a href="{% url 'index' %}">Home</a></li>
-            <li><a href="{% url 'registro_pedido' %}">Pedidos</a></li>
+            <li><a href="{% url 'pedidos_cliente' %}">Pedidos</a></li>
             <li><a href="{% url 'listado_productos' %}">Lista de productos</a></li>
             <li><a href="{% url 'listado_sucursales' %}">Lista de Sucursales</a></li>
+            <li><a href="{% url 'listado_pedidos' %}">Lista de Pedidos</a></li>
             <li><a href="{% url 'buscar_transferencias' %}">Productos en sucursales</a></li>
             {% if user.is_authenticated %}
                 <form action="{% url 'logout' %}" method="post">

@@ -1,6 +1,6 @@
 from django.urls import path, include
 from . import views
-from .views import ProductoListView, ProductoDeleteView, ProductoUpdateView, SucursalListView, SucursalDeleteView, SucursalUpdateView
+from .views import ProductoListView, ProductoDeleteView, ProductoUpdateView, SucursalListView, SucursalDeleteView, SucursalUpdateView, PedidoListView, PedidoDeleteView, PedidoUpdateView, registro_pedido
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
@@ -15,8 +15,12 @@ urlpatterns = [
     path('listado_sucursales/', SucursalListView.as_view(), name='listado_sucursales'),
     path('sucursal/<int:pk>/edit/', SucursalUpdateView.as_view(), name='sucursal-edit'),
     path('sucursal/<int:pk>/delete/', SucursalDeleteView.as_view(), name='sucursal-delete'),
-    path('hacer_pedido/', views.registro_pedido, name='registro_pedido'),
+    path('hacer_pedido/', views.registro_pedido, name='pedidos_cliente'),
+    path('pedidos/<int:pk>/edit/', PedidoUpdateView.as_view(), name='pedido-edit'),
+    path('pedidos/<int:pk>/delete/', PedidoDeleteView.as_view(), name='pedido-delete'),
+    #path('pedidos/nuevo/', PedidoCreateView.as_view(), name='crear_pedido'),
     path('buscar_transferencias/', views.buscar_transferencias, name='buscar_transferencias'),
+    path('listado_pedidos/', PedidoListView.as_view(), name='listado_pedidos'),
     
     
 ]

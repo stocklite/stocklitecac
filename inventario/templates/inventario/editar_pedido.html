@@ -1,0 +1,37 @@
+{% extends 'inventario/base.html' %}
+
+{% block title %}Editar Pedido{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Editar Pedido</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        {{ formset.management_form }}
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Precio</th>
+                    <th>Total</th>
+                    <th>Eliminar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item_form in formset %}
+                    <tr>
+                        <td>{{ item_form.producto }}</td>
+                        <td>{{ item_form.cantidad }}</td>
+                        <td>{{ item_form.precio }}</td>
+                        <td>{{ item_form.total }}</td>
+                        <td>{{ item_form.DELETE }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+    </form>
+</div>
+{% endblock %}
