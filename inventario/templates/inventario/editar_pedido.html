@@ -12,6 +12,7 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
+                    <th>ID</th>
                     <th>Producto</th>
                     <th>Cantidad</th>
                     <th>Precio</th>
@@ -22,6 +23,7 @@
             <tbody>
                 {% for item_form in formset %}
                     <tr>
+                        <td>{{ item_form.id }}</td>
                         <td>{{ item_form.producto }}</td>
                         <td>{{ item_form.cantidad }}</td>
                         <td>{{ item_form.precio }}</td>

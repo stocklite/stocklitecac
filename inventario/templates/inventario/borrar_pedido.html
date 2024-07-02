@@ -10,7 +10,7 @@
     <form method="post">
         {% csrf_token %}
         <input type="submit" value="Confirmar" class="btn btn-danger">
-        <a href="{% url 'listado_productos' %}" class="btn btn-secondary">Cancelar</a>
+        <a href="{% url 'listado_pedidos' %}" class="btn btn-secondary">Cancelar</a>
     </form>
 </div>
 {% endblock %}

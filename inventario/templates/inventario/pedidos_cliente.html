@@ -21,7 +21,7 @@
     </div>
 {% endif %}
 
-<form method="POST" action="">
+<form id="pedido-form" method="POST" action="">
     {% csrf_token %}
     <div>
         {{ pedido_form.tipo_de_operacion.label_tag }}
@@ -64,123 +64,94 @@
 <h3>Total del Pedido: <span id="total-pedido">0.00</span></h3>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('DOM fully loaded and parsed');
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM fully loaded and parsed');
+    
+    var tipoOperacionField = document.querySelector('select[name="tipo_de_operacion"]');
+    var sucursalField = document.getElementById('sucursal-field');
+    var formsetContainer = document.getElementById('formset-container');
+    var addProductBtn = document.getElementById('add-product-btn');
+    var totalFormsInput = document.querySelector('input[name="items-TOTAL_FORMS"]');
+    var formIdx = parseInt(totalFormsInput.value);
+    var selectedProductsTable = document.getElementById('selected-products-table').getElementsByTagName('tbody')[0];
+    var totalPedidoSpan = document.getElementById('total-pedido');
+
+    function toggleSucursalField() {
+        if (tipoOperacionField && tipoOperacionField.value === 'egresos') {
+            sucursalField.style.display = 'block';
+        } else {
+            sucursalField.style.display = 'none';
+        }
+    }
+
+    function updateTotalPedido() {
+        let totalPedido = Array.from(selectedProductsTable.querySelectorAll('tr')).reduce((acc, row) => {
+            return acc + parseFloat(row.cells[3].textContent);
+        }, 0);
+        totalPedidoSpan.textContent = totalPedido.toFixed(2);
+    }
+
+    function addOrUpdateProductInTable(formDiv) {
+        var productoField = formDiv.querySelector('select[name$="-producto"]');
+        var cantidadField = formDiv.querySelector('input[name$="-cantidad"]');
+        var precioField = formDiv.querySelector('input[name$="-precio"]');
+        var totalField = formDiv.querySelector('input[name$="-total"]');
         
-        var tipoOperacionField = document.querySelector('select[name="tipo_de_operacion"]');
-        var sucursalField = document.getElementById('sucursal-field');
-        var formsetContainer = document.getElementById('formset-container');
-        var addProductBtn = document.getElementById('add-product-btn');
-        var totalFormsInput = document.querySelector('input[name="items-TOTAL_FORMS"]');
-        var formIdx = parseInt(totalFormsInput.value);
-        var selectedProductsTable = document.getElementById('selected-products-table').getElementsByTagName('tbody')[0];
-        var totalPedidoSpan = document.getElementById('total-pedido');
-        var totalPedido = 0;
-        var productSet = new Set();
+        var producto = productoField.options[productoField.selectedIndex].text;
+        var cantidad = parseInt(cantidadField.value) || 0;
+        var precio = parseFloat(precioField.value) || 0;
+        var total = cantidad * precio;
+        totalField.value = total.toFixed(2);
 
-        function toggleSucursalField() {
-            if (tipoOperacionField && tipoOperacionField.value === 'egresos') {
-                sucursalField.style.display = 'block';
-            } else {
-                sucursalField.style.display = 'none';
-            }
-        }
-
-        function updateTotalPedido() {
-            totalPedido = 0;
-            var rows = selectedProductsTable.getElementsByTagName('tr');
-            for (var i = 0; i < rows.length; i++) {
-                totalPedido += parseFloat(rows[i].getElementsByTagName('td')[3].innerText);
-            }
-            totalPedidoSpan.innerText = totalPedido.toFixed(2);
-        }
-
-        tipoOperacionField.addEventListener('change', toggleSucursalField);
-        toggleSucursalField();  // Initial call to set the correct visibility
-
-        function addProductToTable(productoField, cantidadField, precioField, totalField) {
-            var producto = productoField.options[productoField.selectedIndex].text;
-            var cantidad = parseInt(cantidadField.value) || 0;
-            var precio = parseFloat(precioField.value) || 0;
-            var total = parseFloat(totalField.value) || 0;
-
-            if (producto && cantidad > 0 && precio > 0) {
-                var row = selectedProductsTable.insertRow();
-                row.innerHTML = `<td>${producto}</td>
-                                 <td>${cantidad}</td>
-                                 <td>${precio.toFixed(2)}</td>
-                                 <td>${total.toFixed(2)}</td>`;
-                productSet.add(productoField.value);
-                updateTotalPedido();
-                console.log('Product added to the table');
-            } else {
-                console.log('Invalid product details or product already added');
-            }
-        }
-
-        function addProductEvents(productoField, cantidadField, precioField, totalField) {
-            productoField.addEventListener('change', function() {
-                console.log('Producto changed:', productoField.value);
-            });
-
-            cantidadField.addEventListener('input', function() {
-                var cantidad = parseInt(cantidadField.value) || 0;
-                var precio = parseFloat(precioField.value) || 0;
-                var total = cantidad * precio;
-                totalField.value = total.toFixed(2);
-                console.log('Cantidad changed:', cantidadField.value);
-            });
-
-            precioField.addEventListener('input', function() {
-                var cantidad = parseInt(cantidadField.value) || 0;
-                var precio = parseFloat(precioField.value) || 0;
-                var total = cantidad * precio;
-                totalField.value = total.toFixed(2);
-                console.log('Precio changed:', precioField.value);
-            });
-        }
-
-        // Añadir eventos a los formularios iniciales
-        var initialForms = formsetContainer.querySelectorAll('.formset-form');
-        initialForms.forEach(function(formDiv) {
-            var productoField = formDiv.querySelector('select[name$="-producto"]');
-            var cantidadField = formDiv.querySelector('input[name$="-cantidad"]');
-            var precioField = formDiv.querySelector('input[name$="-precio"]');
-            var totalField = formDiv.querySelector('input[name$="-total"]');
-            addProductEvents(productoField, cantidadField, precioField, totalField);
-        });
-
-        addProductBtn.addEventListener('click', function() {
-            var newFormDiv = document.createElement('div');
-            newFormDiv.classList.add('formset-form');
-            var newFormHtml = formsetContainer.children[0].innerHTML.replace(/__prefix__/g, formIdx);
-            newFormDiv.innerHTML = newFormHtml;
-            formsetContainer.appendChild(newFormDiv);
-
-            var productoField = newFormDiv.querySelector('select[name$="-producto"]');
-            var cantidadField = newFormDiv.querySelector('input[name$="-cantidad"]');
-            var precioField = newFormDiv.querySelector('input[name$="-precio"]');
-            var totalField = newFormDiv.querySelector('input[name$="-total"]');
-
-            addProductEvents(productoField, cantidadField, precioField, totalField);
-
-            formIdx++;
-            totalFormsInput.value = formIdx;
-            console.log('Added new product form');
-        });
-
-        // Evento para agregar productos a la tabla al cambiar los campos
-        formsetContainer.addEventListener('change', function(event) {
-            if (event.target.tagName === 'SELECT' || event.target.tagName === 'INPUT') {
-                var formDiv = event.target.closest('.formset-form');
-                var productoField = formDiv.querySelector('select[name$="-producto"]');
-                var cantidadField = formDiv.querySelector('input[name$="-cantidad"]');
-                var precioField = formDiv.querySelector('input[name$="-precio"]');
-                var totalField = formDiv.querySelector('input[name$="-total"]');
-                addProductToTable(productoField, cantidadField, precioField, totalField);
-                console.log('Formset container changed');
+        // Buscar si el producto ya está en la tabla
+        var found = false;
+        Array.from(selectedProductsTable.querySelectorAll('tr')).forEach(row => {
+            if (row.cells[0].textContent === producto) {
+                row.cells[1].textContent = cantidad;
+                row.cells[2].textContent = precio.toFixed(2);
+                row.cells[3].textContent = total.toFixed(2);
+                found = true;
             }
         });
+
+        // Si no se encuentra, añadir una nueva fila
+        if (!found) {
+            var row = selectedProductsTable.insertRow();
+            row.innerHTML = `<td>${producto}</td>
+                             <td>${cantidad}</td>
+                             <td>${precio.toFixed(2)}</td>
+                             <td>${total.toFixed(2)}</td>`;
+        }
+
+        updateTotalPedido();
+    }
+
+    function addProductEvents(formDiv) {
+        var productoField = formDiv.querySelector('select[name$="-producto"]');
+        var cantidadField = formDiv.querySelector('input[name$="-cantidad"]');
+        var precioField = formDiv.querySelector('input[name$="-precio"]');
+
+        productoField.addEventListener('change', () => addOrUpdateProductInTable(formDiv));
+        cantidadField.addEventListener('input', () => addOrUpdateProductInTable(formDiv));
+        precioField.addEventListener('input', () => addOrUpdateProductInTable(formDiv));
+    }
+
+    addProductBtn.addEventListener('click', function() {
+        var newFormHtml = formsetContainer.children[0].outerHTML.replace(/-0-/g, `-${formIdx}-`);
+        formsetContainer.insertAdjacentHTML('beforeend', newFormHtml);
+        var newFormDiv = formsetContainer.children[formIdx];
+        addProductEvents(newFormDiv);
+        
+        formIdx++;
+        totalFormsInput.value = formIdx;
     });
+
+    // Añadir eventos a los formularios iniciales
+    Array.from(formsetContainer.children).forEach(addProductEvents);
+    tipoOperacionField.addEventListener('change', toggleSucursalField);
+    toggleSucursalField(); // Call to set the correct visibility on load
+});
+
+
 </script>
 {% endblock %}

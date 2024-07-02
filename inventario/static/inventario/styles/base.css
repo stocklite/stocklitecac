@@ -28,10 +28,6 @@
     padding-right: 5%;
     font-weight: bold;
   }
-
-  .logo {
-    max-height: 50px;
-  }
   
   h1 {
     color: black;
@@ -58,6 +54,7 @@
     left: 0;
     bottom: 0; /* Ensure the sidebar extends to the bottom */
     overflow-y: auto; /* Add scroll if needed */
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
     
   }
   
@@ -99,7 +96,7 @@
 
   main {
     flex: 1;
-    padding: 50px;
+    
     margin-left: 220px; /* Adjust based on the sidebar width */
     margin-top: 70px; /* Adjust based on header height */
   }
@@ -121,4 +118,17 @@
 .alert .alert-success .sm {
   padding: 5px;
   
+  }
+
+/* Estilos para el logo */
+.logo {
+    text-align: center; /* Centra el logo */
+    margin-bottom: 20px; /* Espacio debajo del logo */
+}
+
+.logo-img {
+    max-width: 100%;
+    height: auto; /* Asegura que la imagen se ajuste proporcionalmente */
+    max-height: 150px;
+    border-radius: 45px;
   }

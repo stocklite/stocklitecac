@@ -2,12 +2,37 @@
 * {
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
+    box-sizing:border-box;
     font-family: sans-serif;
 }
 
 body {
+    background: url("../img/index.webp") no-repeat center center fixed;
+    background-size: cover;
+    background-color: rgba(255, 255, 255, 0.5); /* Ajusta el último valor para la transparencia */
+    color: #333; /* Asegúrate de que el texto sea legible sobre el fondo */
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+.image-container {
+    height: 100%;
+    width: 100%;
     display: flex;
-    min-height: 100vh;
-    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 40px;
+}
+
+.image-container div {
+    background-color: rgba(0, 0, 0, 0.5); /* Fondo semi-transparente para el texto */
+    padding: 40px;
+    border-radius: 10px;
+    color: white;
+    font-weight: bold;
 }

@@ -12,6 +12,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from .forms import BusquedaForm, BuscarPedidosForm
 from .forms import inlineformset_factory
 from django.core.exceptions import ValidationError
+from django.db import transaction
 
 
 
@@ -63,115 +64,62 @@ def alta_sucursales(request):
 
     return render(request, 'inventario/alta_sucursales.html', contexto)
 
-'''class PedidoCreateView(CreateView):
-    model = Pedidos
-    form_class = PedidosForm
-    template_name = 'inventario/crear_pedido.html'
-    success_url = reverse_lazy('listado_pedidos')
-
-    def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
-        if self.request.POST:
-            data['formset'] = ItemPedidoFormset(self.request.POST, self.request.FILES)
-        else:
-            data['formset'] = ItemPedidoFormset()
-        data['sucursales'] = Sucursales.objects.all()
-        return data
-
-    def form_valid(self, form):
-        context = self.get_context_data()
-        formset = context['formset']
-        sucursal_id = self.request.POST.get('sucursal')
-        tipo_de_operacion = form.cleaned_data['tipo_de_operacion']
-
-        if formset.is_valid():
-            if tipo_de_operacion == 'egresos':
-                for item in formset:
-                    if item.cleaned_data:
-                        producto = item.cleaned_data.get('producto')
-                        cantidad = item.cleaned_data.get('cantidad')
-                        if producto and producto.cantidad < cantidad:
-                            messages.error(self.request, f"No hay suficiente stock de {producto.nombre}")
-                            return self.form_invalid(form)
-
-            self.object = form.save(commit=False)
-            if tipo_de_operacion == 'egresos' and not sucursal_id:
-                messages.error(self.request, 'Debe seleccionar una sucursal para la operación de egresos.')
-                return self.form_invalid(form)
-
-            if tipo_de_operacion == 'egresos':
-                self.object.sucursal = Sucursales.objects.get(id=sucursal_id)
-
-            self.object.save()
-            formset.instance = self.object
-            formset.save()
-
-            for item in formset:
-                if item.cleaned_data:
-                    producto = item.cleaned_data.get('producto')
-                    cantidad = item.cleaned_data.get('cantidad')
-                    if producto and cantidad:
-                        if tipo_de_operacion == 'ingresos':
-                            producto.cantidad += cantidad
-                        elif tipo_de_operacion == 'egresos':
-                            producto.cantidad -= cantidad
-                        producto.save()
-
-            messages.success(self.request, 'El pedido se registró correctamente')
-            return super().form_valid(form)
-        else:
-            return self.form_invalid(form)'''
-
-
 
 @login_required(login_url='login')
 def registro_pedido(request):
     if request.method == 'POST':
         pedido_form = PedidosForm(request.POST)
-        formset = ItemPedidoFormset(request.POST, request.FILES)
-        sucursal_id = request.POST.get('sucursal')
+        formset = ItemPedidoFormset(request.POST)
 
         if pedido_form.is_valid() and formset.is_valid():
             tipo_de_operacion = pedido_form.cleaned_data['tipo_de_operacion']
+            sucursal_id = request.POST.get('sucursal')
 
-            # Validar existencia de stock para egresos antes de guardar el pedido
-            if tipo_de_operacion == 'egresos':
-                for item in formset:
-                    if item.cleaned_data:  # Asegurarse de que el formulario no esté vacío
-                        producto = item.cleaned_data.get('producto')
-                        cantidad = item.cleaned_data.get('cantidad')
-                        if producto and producto.cantidad < cantidad:
-                            messages.error(request, f"No hay suficiente stock de {producto.nombre}")
-                            return redirect('registro_pedido')
+            with transaction.atomic():
+                pedido = pedido_form.save(commit=False)
 
-            # Guardar el pedido y actualizar la cantidad de productos
-            pedido = pedido_form.save(commit=False)
-            if tipo_de_operacion == 'egresos' and not sucursal_id:
-                messages.error(request, 'Debe seleccionar una sucursal para la operación de egresos.')
-                return redirect('registro_pedido')
+                if tipo_de_operacion == 'egresos' and not sucursal_id:
+                    messages.error(request, 'Debe seleccionar una sucursal para la operación de egresos.')
+                    return redirect('registro_pedido')
 
-            if tipo_de_operacion == 'egresos':
-                pedido.sucursal = Sucursales.objects.get(id=sucursal_id)
+                if tipo_de_operacion == 'egresos':
+                    pedido.sucursal = Sucursales.objects.get(id=sucursal_id)
 
-            pedido.save()
-            formset.instance = pedido
-            formset.save()
+                pedido.save()
 
-            for item in formset:
-                if item.cleaned_data:  # Asegurarse de que el formulario no esté vacío
-                    producto = item.cleaned_data.get('producto')
-                    cantidad = item.cleaned_data.get('cantidad')
-                    if producto and cantidad:
-                        print(f"Producto: {producto.nombre}, Cantidad: {cantidad}")
+                errores_en_productos = False
+                for form in formset:
+                    if form.cleaned_data:
+                        producto = form.cleaned_data.get('producto')
+                        if producto is None:
+                            errores_en_productos = True
+                            messages.error(request, "Producto no válido.")
+                            continue
+
+                        item = form.save(commit=False)
+                        item.pedido = pedido
+                        item.save()
+
+                        cantidad = form.cleaned_data.get('cantidad')
+
                         if tipo_de_operacion == 'ingresos':
                             producto.cantidad += cantidad
                         elif tipo_de_operacion == 'egresos':
+                            if producto.cantidad < cantidad:
+                                messages.error(request, f"No hay suficiente stock de {producto.nombre}")
+                                errores_en_productos = True
+                                continue
                             producto.cantidad -= cantidad
-                        producto.save()
-                        print(f"Nuevo stock de {producto.nombre}: {producto.cantidad}")
 
-            messages.success(request, 'El pedido se registró correctamente')
-            return redirect('index')
+                        producto.save()
+
+                if not errores_en_productos:
+                    messages.success(request, 'El pedido se registró correctamente')
+                    return redirect('index')
+                else:
+                    transaction.set_rollback(True)
+                    return redirect('registro_pedido')
+
     else:
         pedido_form = PedidosForm()
         formset = ItemPedidoFormset()
@@ -182,6 +130,7 @@ def registro_pedido(request):
         'sucursales': Sucursales.objects.all()
     }
     return render(request, 'inventario/pedidos_cliente.html', contexto)
+
 
 class ProductoListView(LoginRequiredMixin, ListView):
     model = Producto
@@ -202,10 +151,6 @@ class ProductoListView(LoginRequiredMixin, ListView):
         context['form'] = BusquedaForm(self.request.GET)
         return context
     
-
-def listado_productos(request):
-    productos = Producto.objects.all()
-    return render(request, 'inventario/listado_productos.html', {'productos': productos})
 
 class ProductoDeleteView(DeleteView):
     model = Producto
@@ -259,28 +204,8 @@ class PedidoListView(LoginRequiredMixin, ListView):
 class PedidoDeleteView(DeleteView):
     model = Pedidos
     template_name = 'inventario/borrar_pedido.html'
-    success_url = reverse_lazy('inventario/listado_pedidos.html')
+    success_url = reverse_lazy('listado_pedidos')
 
-
-'''
-def editar_pedido(request, pedido_id):
-    pedido = get_object_or_404(Pedidos, pk=pedido_id)
-    if request.method == 'POST':
-        form = PedidosForm(request.POST, instance=pedido)
-        formset = ItemPedidoFormset(request.POST, instance=pedido)
-        if form.is_valid() and formset.is_valid():
-            form.save()
-            formset.save()
-            return redirect('listado_pedidos')
-    else:
-        form = PedidosForm(instance=pedido)
-        formset = ItemPedidoFormset(instance=pedido)
-    
-    context = {
-        'form': form,
-        'formset': formset,
-    }
-    return render(request, 'inventario/editar_pedido.html', context)'''
 
 class PedidoUpdateView(UpdateView):
     model = Pedidos
@@ -299,12 +224,15 @@ class PedidoUpdateView(UpdateView):
     def form_valid(self, form):
         context = self.get_context_data()
         formset = context['formset']
+        
         if formset.is_valid():
+            print("Errores del formset:", formset.errors)
             self.object = form.save()
             formset.instance = self.object
             formset.save()
             return redirect(self.get_success_url())
         else:
+            print(formset.errors)  # Agregar para ver los errores de validación
             return self.render_to_response(self.get_context_data(form=form))
         
 @login_required(login_url='login')
